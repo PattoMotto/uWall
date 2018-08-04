@@ -5,16 +5,15 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.util.Log
 
-class SampleBootReceiver : BroadcastReceiver() {
+class TimerBootReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        Log.d("SampleBootReceiver", "onReceive")
         val pendingResult = goAsync()
+        val persistentStorage = PersistentStorage(context)
         val refreshBackgroundManager = RefreshWallpaperManager()
-        refreshBackgroundManager.fetchImage(context) { url, _ ->
-            Log.d("SampleBootReceiver", url)
+        refreshBackgroundManager.fetchImage(context) { url, randomPhoto ->
+            persistentStorage.photoInfo = photoInfoFromUnsplashPhoto(randomPhoto)
             refreshBackgroundManager.setWallpaper(url, context) {
-                Log.d("SampleBootReceiver", "completed")
                 pendingResult.finish()
             }
         }

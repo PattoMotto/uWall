@@ -17,6 +17,7 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
@@ -30,20 +31,20 @@ import kotlin.concurrent.thread
 
 class RefreshWallpaperManager {
 
-    fun fetchImage(context: Context, queryText: String, width: Int, height: Int, callback: (String, RandomPhoto) -> Unit) {
+    fun fetchImage(context: Context, queryText: String, width: Int, height: Int, callback: (String, UnsplashPhoto) -> Unit) {
         val persistentStorage = PersistentStorage(context)
         val encodedQuery = Uri.encode(queryText)
         persistentStorage.randomPhotoUrl = "https://api.unsplash.com/photos/random?count=1&orientation=portrait&query=$encodedQuery&w=$width&h=$height"
         fetchImage(context, callback)
     }
 
-    fun fetchImage(context: Context, callback: (String, RandomPhoto) -> Unit) {
+    fun fetchImage(context: Context, callback: (String, UnsplashPhoto) -> Unit) {
         val unsplashApiKey = BuildConfig.UnsplashApiKey
         val persistentStorage = PersistentStorage(context)
         val header = Pair("Authorization","Client-ID $unsplashApiKey")
         val url = persistentStorage.randomPhotoUrl
         Fuel.get(url)
-                .header(header).responseObject { request: Request, response: Response, result: Result<List<RandomPhoto>, FuelError> ->
+                .header(header).responseObject { request: Request, response: Response, result: Result<List<UnsplashPhoto>, FuelError> ->
                     result.component1()?.map {
                         val randomPhoto = it
                         randomPhoto.urls.custom.let {
@@ -59,6 +60,7 @@ class RefreshWallpaperManager {
     fun previewAndSetWallpaper(url: String, context: Context, imageView: ImageView, progressBar: ProgressBar) {
         Glide.with(context)
                 .load(url)
+                .apply(RequestOptions().centerCrop())
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .listener(object : RequestListener<Drawable> {
                     override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
@@ -80,6 +82,7 @@ class RefreshWallpaperManager {
     fun setWallpaper(url: String, context: Context, callback: (() -> Unit)? = null) {
         Glide.with(context)
                 .load(url)
+                .apply(RequestOptions().centerCrop())
                 .into(object : SimpleTarget<Drawable>() {
                     override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
                         (resource as? BitmapDrawable)?.let {
