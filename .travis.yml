@@ -2,7 +2,7 @@ language: android
 jdk: oraclejdk8
 
 env:
-- ANDROID_EMULATOR_API_LEVEL=21
+  - ANDROID_EMULATOR_API_LEVEL=21
 
 android:
   components:
@@ -32,7 +32,7 @@ script:
   # Avoid having it lock itself again.
   - adb shell svc power stayon true
   # Make gradle output info-level logging, so the tests do not timeout
-- ./gradlew connectedCheck --info -PdisablePreDex;
+  - ./gradlew connectedCheck --info -PdisablePreDex;
 
 before_install:
   - chmod +x gradlew
