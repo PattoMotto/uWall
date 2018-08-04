@@ -11,7 +11,7 @@ data class PersistentStorage(val context: Context){
     private val randomPhotoUrlKey = "randomPhotoUrl"
     private val photoUrlKey = "photoUrl"
     private val timeIntervalHrKey = "timeIntervalHr"
-    private val randomPhotoKey = "randomPhoto"
+    private val photoInfoKey = "photoInfo"
 
     private val prefKey = "uWall"
     private val defaultKeyword = "landscape"
@@ -48,14 +48,14 @@ data class PersistentStorage(val context: Context){
             commit()
         }
 
-    var randomPhoto: RandomPhoto?
-        get() = sharePref.getString(randomPhotoKey,"").let {
+    var photoInfo: PhotoInfo?
+        get() = sharePref.getString(photoInfoKey,"").let {
             if (it.isEmpty()) { null } else {
-                gson.fromJson(it, RandomPhoto::class.java)
+                gson.fromJson(it, PhotoInfo::class.java)
             }
         }
         set(value) = with(sharePref.edit()) {
-            putString(randomPhotoKey, gson.toJson(value))
+            putString(photoInfoKey, gson.toJson(value))
             commit()
         }
 }
