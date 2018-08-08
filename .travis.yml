@@ -32,7 +32,7 @@ script:
   # Avoid having it lock itself again.
   - adb shell svc power stayon true
   # Make gradle output info-level logging, so the tests do not timeout
-  - ./gradlew connectedCheck --info -PdisablePreDex;
+  - ./gradlew connectedCheck --info
 
 before_install:
   - chmod +x gradlew
